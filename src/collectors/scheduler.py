@@ -3,9 +3,9 @@ import time
 from datetime import datetime
 from typing import Callable, Optional
 
-from src.collectors.climate_collector import ClimateStationCollector
-from src.config import Config
-from src.utils.logger import logger
+from collectors.climate_collector import ClimateStationCollector
+from config import Config
+from utils.logger import logger
 
 class Scheduler:
     """Планировщик задач для сбора данных"""
@@ -23,7 +23,7 @@ class Scheduler:
             return
         
         self.running = True
-        self.thread = threading.Thread(target=self._run, daemon=True)
+        self.thread = threading.Thread(target=self._run)#, daemon=True)
         self.thread.start()
         logger.info(f"Планировщик запущен. Интервал: {self.interval} сек")
 
