@@ -1,5 +1,9 @@
+import os
+
+data_dir = os.getenv("FLET_APP_STORAGE_DATA")
+
 class Config:
-    DB_PATH = "data/climate.db"
+    DB_PATH = "data/climate.db" if data_dir is None else f"{data_dir}/climate.db" 
     DB_ECHO = False  # Логи SQL запросов
 
     # Расписание сбора данных (в секундах)
