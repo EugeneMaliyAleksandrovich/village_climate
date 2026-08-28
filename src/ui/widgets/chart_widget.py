@@ -1,7 +1,7 @@
 import flet as ft
 import flet_charts as fch
 from typing import List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 class ChartWidget:
@@ -63,7 +63,8 @@ class ChartWidget:
                 x = i
                 y = self._map_temp_value_to_chart_axis(float(record[field])) if field == 'temperature' else float(record[field])
 
-                tooltip = f"{record[field]} °C" if field == 'temperature' else f"{record[field]} %"
+                dt = datetime.fromisoformat(record['timestamp'])
+                tooltip = f"{record[field]} °C, {dt.strftime("%H:%M")}" if field == 'temperature' else f"{record[field]} %, {dt.strftime("%H:%M")}"
                 points.append(fch.LineChartDataPoint(x=x, y=y, tooltip=tooltip))
         
         return fch.LineChartData(
@@ -84,12 +85,13 @@ class ChartWidget:
     def _create_bottom_axis(self) -> fch.ChartAxis:
         """Создание нижней оси с временными метками"""
         labels = []
+
         if self.data:
-            for i, record in enumerate(self.data[:10]):  # Показываем каждую 10-ю метку
+            for i, record in enumerate(self.data):
                 if record.get('timestamp'):
                     dt = datetime.fromisoformat(record['timestamp'])
                     labels.append(fch.ChartAxisLabel(
-                        value=i * (len(self.data) // 10),
+                        value=i,
                         label=ft.Text(dt.strftime("%H:%M"), size=10)
                     ))
         

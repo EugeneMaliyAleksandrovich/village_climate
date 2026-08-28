@@ -43,7 +43,7 @@ class DatabaseManager:
         from_date: Optional[datetime] = None, to_date: Optional[datetime] = None
     ) -> List[Dict[str, Any]]:
         """Получение данных с фильтрацией"""
-        query = "SELECT * FROM climate_data"
+        query = "SELECT * FROM climate_data WHERE TRUE"
         params = []
         
         if from_date:
@@ -54,7 +54,7 @@ class DatabaseManager:
             query += " AND timestamp <= ?"
             params.append(to_date)
         
-        query += " ORDER BY timestamp DESC LIMIT ? OFFSET ?"
+        query += " ORDER BY timestamp LIMIT ? OFFSET ?"
         params.extend([limit, offset])
         
         with self.get_connection() as connection:

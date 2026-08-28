@@ -6,6 +6,8 @@ from ui.widgets.table_widget import TableWidget
 from collectors.scheduler import Scheduler
 from config import Config
 from utils.logger import logger
+from ui.widgets.date_picker_widget import DatePickerWidget
+from datetime import datetime, time
 
 class ClimateApp:
     """Основное приложение Flet"""
@@ -15,6 +17,7 @@ class ClimateApp:
         self.chart_widget = None
         self.table_widget = None
         self.current_page = "chart"  # chart или table
+        self.date_picker_widget = None
 
     def main(self, page: ft.Page):
         """Основная функция Flet"""
@@ -22,6 +25,10 @@ class ClimateApp:
         page.theme_mode = ft.ThemeMode.LIGHT
         page.window_width = Config.APP_WIDTH
         page.window_height = Config.APP_HEIGHT
+
+        self.page = page
+
+        self.date_picker_widget = DatePickerWidget(page=page, on_date_change=self._on_date_change)
 
         # Запустить планировщик
         self.scheduler.start()
@@ -77,27 +84,12 @@ class ClimateApp:
             destinations=destinations, on_change=self._on_navigation_change,
         )
 
-    def _on_navigation_change(self, e):
-        """Обработка изменения навигации"""
-        index = e.control.selected_index
-        
-        if index == 0:
-            self.current_page = "chart"
-            self.load_data()
-        elif index == 1:
-            self.current_page = "table"
-            self.load_data()
-        elif index == 2:
-            # Принудительное обновление
-            self._manual_collect()
-            self.load_data()
-        elif index == 3:
-            self._show_settings()
-
     def load_data(self):
         """Загрузка данных из БД"""
         try:
-            data = self.db.get_last_data(50)
+            from_date = datetime.combine(self.date_picker_widget.selected_date.date(), time.min)
+            to_date = datetime.combine(self.date_picker_widget.selected_date.date(), time.max)
+            data = self.db.get_climate_data(from_date=from_date, to_date=to_date)
             
             if self.current_page == "chart":
                 self._show_chart(data)
@@ -112,9 +104,13 @@ class ClimateApp:
         """Отображает график"""
         self.chart_widget = ChartWidget(data)
         chart = self.chart_widget.create_chart()
+
+        
+        date_picker = self.date_picker_widget.create_date_picker()
         
         self.content_area.content = ft.Column(
-            [
+            [   
+                date_picker,
                 ft.Container(
                     content=chart,
                     expand=True,
@@ -129,13 +125,16 @@ class ClimateApp:
         """Отображает таблицу"""
         self.table_widget = TableWidget(data)
         table = self.table_widget.create_table()
-        
+
+        date_picker = self.date_picker_widget.create_date_picker()
+                
         self.content_area.content = ft.Column(
             [
                 ft.Container(
                     content=ft.Column(
                         [
-                            ft.Text("Последние записи:", size=16, weight=ft.FontWeight.BOLD),
+                            ft.Text("Записи за выбранный период:", size=16, weight=ft.FontWeight.BOLD),
+                            date_picker,
                             ft.Container(
                                 content=table,
                                 padding=10,
@@ -160,7 +159,6 @@ class ClimateApp:
             logger.info("Данные собраны вручную")
             # Обновляем страницу
             self.load_data()
-
 
     def _show_settings(self):
         """Показывает настройки"""
@@ -194,3 +192,28 @@ class ClimateApp:
         """Закрытие приложения"""
         self.scheduler.stop()
         logger.info("Приложение закрыто")
+
+    def _on_navigation_change(self, e):
+        """Обработка изменения навигации"""
+        index = e.control.selected_index
+        
+        if index == 0:
+            self.current_page = "chart"
+            self.load_data()
+        elif index == 1:
+            self.current_page = "table"
+            self.load_data()
+        elif index == 2:
+            # Принудительное обновление
+            self._manual_collect()
+            self.load_data()
+        elif index == 3:
+            self._show_settings()
+    
+    def _on_date_change(self, e):
+        utc_date = self.date_picker_widget.date_picker.value
+        local_date = utc_date.astimezone()
+        self.date_picker_widget.selected_date = local_date
+        self.date_picker_widget.update_date_display()
+        self.content_area.update()
+        self.load_data()
