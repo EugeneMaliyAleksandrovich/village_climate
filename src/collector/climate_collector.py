@@ -3,9 +3,9 @@ from datetime import datetime
 from typing import Optional
 import json
 
-from database.models import ClimateData
-from database.db_manager import DatabaseManager
-from utils.logger import logger
+from common.database.models import ClimateData
+from common.database.db_manager import DatabaseManager
+from utils.collector_logger import logger
 
 class ClimateStationCollector():
     """Сборщик данных с метеостанции"""

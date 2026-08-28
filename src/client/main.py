@@ -1,6 +1,11 @@
+from pathlib import Path
+import sys
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
 import flet as ft
-from ui.app import ClimateApp
-from utils.logger import setup_logging
+from client.ui.app import ClimateApp
+from utils.client_logger import setup_logging
 
 def main():
     """Точка входа в приложение"""

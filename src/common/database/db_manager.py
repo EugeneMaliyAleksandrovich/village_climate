@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from typing import Any, Dict, Optional, List
 
 from .models import ClimateData, DatabaseModels
-from config import Config
+from common.config import Config
 
 class DatabaseManager:
     def __init__(self, db_path: str = Config.DB_PATH):

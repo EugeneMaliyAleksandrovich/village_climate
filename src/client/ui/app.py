@@ -1,19 +1,17 @@
 import flet as ft
 from typing import List, Dict, Any
-from database.db_manager import DatabaseManager
-from ui.widgets.chart_widget import ChartWidget
-from ui.widgets.table_widget import TableWidget
-from collectors.scheduler import Scheduler
-from config import Config
-from utils.logger import logger
-from ui.widgets.date_picker_widget import DatePickerWidget
+from common.database.db_manager import DatabaseManager
+from client.ui.widgets.chart_widget import ChartWidget
+from client.ui.widgets.table_widget import TableWidget
+from common.config import Config
+from utils.client_logger import logger
+from client.ui.widgets.date_picker_widget import DatePickerWidget
 from datetime import datetime, time
 
 class ClimateApp:
     """Основное приложение Flet"""
     def __init__(self):
         self.db = DatabaseManager()
-        self.scheduler = Scheduler()
         self.chart_widget = None
         self.table_widget = None
         self.current_page = "chart"  # chart или table
@@ -30,9 +28,6 @@ class ClimateApp:
 
         self.date_picker_widget = DatePickerWidget(page=page, on_date_change=self._on_date_change)
 
-        # Запустить планировщик
-        self.scheduler.start()
-        
         # Создать навигацию
         navigation = self._create_navigation()
 
@@ -54,7 +49,6 @@ class ClimateApp:
             )
         )
 
-        # Обновление каждые 10 секунд
         page.on_event = self._on_event
 
         # Закрытие приложения
@@ -69,7 +63,6 @@ class ClimateApp:
         navigationsInfo = [
             {'label': 'График', 'icon': ft.Icons.SHOW_CHART},
             {'label': 'Таблица', 'icon': ft.Icons.TABLE_CHART},
-            {'label': 'Обновить', 'icon': ft.Icons.REFRESH},
             {'label': 'Настройки', 'icon': ft.Icons.SETTINGS},
         ]
         destinations = []
@@ -152,14 +145,6 @@ class ClimateApp:
         )
         self.content_area.update()
 
-    def _manual_collect(self):
-        """Ручной сбор данных"""
-        data = self.scheduler.collect_now()
-        if data:
-            logger.info("Данные собраны вручную")
-            # Обновляем страницу
-            self.load_data()
-
     def _show_settings(self):
         """Показывает настройки"""
         # Можно добавить диалог с настройками
@@ -184,13 +169,11 @@ class ClimateApp:
     # Обработчики событий
     def _on_event(self, e):
         """Обработка событий страницы"""
-        # Автообновление каждые 30 секунд
         if e.data == "update":
             self.load_data()
     
     def _on_close(self):
         """Закрытие приложения"""
-        self.scheduler.stop()
         logger.info("Приложение закрыто")
 
     def _on_navigation_change(self, e):
@@ -204,10 +187,6 @@ class ClimateApp:
             self.current_page = "table"
             self.load_data()
         elif index == 2:
-            # Принудительное обновление
-            self._manual_collect()
-            self.load_data()
-        elif index == 3:
             self._show_settings()
     
     def _on_date_change(self, e):

@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from datetime import datetime
 
-LOG_DIR = Path("logs")
+LOG_DIR = Path("logs/client_logs/")
 LOG_DIR.mkdir(exist_ok=True)
 
 def setup_logging():
