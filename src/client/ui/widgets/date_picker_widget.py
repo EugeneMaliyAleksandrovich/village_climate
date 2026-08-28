@@ -9,7 +9,6 @@ class DatePickerWidget:
         self.page = page
         self.date_display = None
         self.selected_date = selected_date
-        self.page = page
         self.content_area = None
         self.on_date_change = on_date_change
         

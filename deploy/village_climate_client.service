@@ -1,0 +1,31 @@
+#!/bin/bash
+# Развернуть файл в /etc/systemd/system
+
+[Unit]
+Description=village_climate_client
+After=network.target village_climate_data_collector.service
+Wants=network.target
+
+[Service]
+Type=simple
+User=village_climate
+Group=village_climate
+WorkingDirectory=/opt/village_climate
+ExecStart=/usr/bin/python3 /opt/village_climate/client/main.py --web --port 9000
+Restart=always
+RestartSec=10
+StandardOutput=append:/opt/village_climate/logs/client_logs/client.log
+StandardError=append:/opt/village_climate/logs/client_logs/client-error.log
+
+# Для GUI (если нужен X11)
+#Environment="DISPLAY=:0"
+#Environment="PYTHONPATH=/opt/village_climate"
+#Environment="PYTHONUNBUFFERED=1"
+
+# Обработка сигналов
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

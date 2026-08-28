@@ -1,0 +1,33 @@
+#!/bin/bash
+# Развернуть файл в /etc/systemd/system
+
+[Unit]
+# Базовые метаданные и зависимости
+Description=village_climate_data_collector
+After=network.target
+Wants=network.target
+
+[Service]
+# Настройки запуска и выполнения
+Type=simple
+User=village_climate
+Group=village_climate
+WorkingDirectory=/opt/village_climate
+ExecStart=/usr/bin/python3 /opt/village_climate/collector/main.py
+Restart=always
+RestartSec=10
+StandardOutput=append:/opt/village_climate/logs/collector.log
+StandardError=append:/opt/village_climate/logs/collector-error.log
+
+# Обработка сигналов
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=10
+
+# Переменные
+Environment="PYTHONPATH=/opt/village_climate"
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+# Настройки установки и автозапуска
+WantedBy=multi-user.target

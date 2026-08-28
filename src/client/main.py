@@ -14,7 +14,7 @@ def main():
     
     # Запуск Flet приложения
     app = ClimateApp()
-    ft.app(target=app.main)
+    ft.run(main=app.main)
 
 if __name__ == "__main__":
     main()

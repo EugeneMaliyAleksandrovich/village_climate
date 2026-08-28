@@ -3,9 +3,9 @@ from typing import List, Dict, Any
 from common.database.db_manager import DatabaseManager
 from client.ui.widgets.chart_widget import ChartWidget
 from client.ui.widgets.table_widget import TableWidget
+from client.ui.widgets.date_picker_widget import DatePickerWidget
 from common.config import Config
 from utils.client_logger import logger
-from client.ui.widgets.date_picker_widget import DatePickerWidget
 from datetime import datetime, time
 
 class ClimateApp:
@@ -16,6 +16,7 @@ class ClimateApp:
         self.table_widget = None
         self.current_page = "chart"  # chart или table
         self.date_picker_widget = None
+        self.file_picker = None
 
     def main(self, page: ft.Page):
         """Основная функция Flet"""
@@ -86,8 +87,10 @@ class ClimateApp:
             
             if self.current_page == "chart":
                 self._show_chart(data)
-            else:
+            elif self.current_page == "table":
                 self._show_table(data)
+            else:
+                pass
                 
         except Exception as e:
             logger.error(f"Ошибка загрузки данных: {e}")
@@ -98,7 +101,6 @@ class ClimateApp:
         self.chart_widget = ChartWidget(data)
         chart = self.chart_widget.create_chart()
 
-        
         date_picker = self.date_picker_widget.create_date_picker()
         
         self.content_area.content = ft.Column(
@@ -147,8 +149,25 @@ class ClimateApp:
 
     def _show_settings(self):
         """Показывает настройки"""
-        # Можно добавить диалог с настройками
-        pass
+
+        self.file_picker = ft.TextField(
+            label="Путь к базе данных",
+            width=500,
+            height=50,
+            text_size=14,
+            prefix_icon=ft.Icons.DATA_OBJECT
+        )
+        commit_db_path = ft.ElevatedButton("Обновить подключение к базе", icon=ft.Icons.COMMIT, on_click=self._on_change_db_path,)
+
+        self.content_area.content = ft.Row(
+            [   
+                self.file_picker,
+                ft.VerticalDivider(width=1),
+                commit_db_path
+            ],
+            expand=True,
+        )
+        self.content_area.update()
 
     def _show_error(self, message: str):
         """Показывает ошибку"""
@@ -196,3 +215,6 @@ class ClimateApp:
         self.date_picker_widget.update_date_display()
         self.content_area.update()
         self.load_data()
+
+    def _on_change_db_path(self, e):
+        self.db = DatabaseManager(db_path=self.file_picker.value)
