@@ -1,9 +1,12 @@
 import os
+from common.path_helper import ProjectPaths
+from pathlib import Path
 
 data_dir = os.getenv("FLET_APP_STORAGE_DATA")
+project_paths = ProjectPaths()
 
 class Config:
-    DB_PATH = "data/climate.db" if data_dir is None else f"{data_dir}/climate.db" 
+    DB_PATH = Path(f"{project_paths.data_dir}/climate.db")
     DB_ECHO = False  # Логи SQL запросов
 
     # Расписание сбора данных (в секундах)
@@ -22,3 +25,6 @@ class Config:
     CHART_MAX_Y = 40
     CHART_MIN_X = 0
     CHART_MAX_X = 24  # 24 часа
+
+    # Логи
+    LOGS_PATH = project_paths.logs_dir

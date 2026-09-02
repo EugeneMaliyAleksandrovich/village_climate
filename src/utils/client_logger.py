@@ -1,12 +1,9 @@
-import tempfile
-import os
 import logging
-from pathlib import Path
 from datetime import datetime
+from common.config import Config
+from pathlib import Path
 
-data_dir = os.getenv("FLET_APP_STORAGE_DATA")
-
-LOG_DIR = Path("logs/client_logs/") if data_dir is None else Path(os.path.join(tempfile.gettempdir()))
+LOG_DIR = Path(f"{Config.LOGS_PATH}/client_logs/")
 LOG_DIR.mkdir(exist_ok=True)
 
 def setup_logging():

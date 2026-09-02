@@ -1,8 +1,9 @@
 import logging
-from pathlib import Path
 from datetime import datetime
+from common.config import Config
+from pathlib import Path
 
-LOG_DIR = Path("logs/collector_logs/")
+LOG_DIR = Path(f"{Config.LOGS_PATH}/collector_logs/")
 LOG_DIR.mkdir(exist_ok=True)
 
 def setup_logging():
