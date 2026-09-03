@@ -13,15 +13,13 @@ class ProjectPaths:
         self.logs_dir = Path(self._root / "logs")
 
     def _find_root(self) -> Path:
-        """
-        Найти корень проекта
-        Маркеры: requirements.txt, .git, README.md
-        """
+        """Найти корень проекта"""
+        
         # Начинаем с директории этого файла
         current = Path(__file__).resolve().parent
         
         # Маркеры корня проекта
-        markers = ['requirements.txt', 'setup.py', 'pyproject.toml', '.git']
+        markers = ['logs', 'src', 'data', '.git']
         
         # Ищем вверх до 10 уровней
         for _ in range(10):
