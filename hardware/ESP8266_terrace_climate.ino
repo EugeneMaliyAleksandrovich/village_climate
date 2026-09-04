@@ -2,8 +2,6 @@
 #include <ESP8266WebServer.h>
 
 // Конфигурация Wi-Fi
-const char* ssid = "zubnojkod";
-const char* password = "987456321";
 
 // Глобальные переменные
 float lastTemp = 0;
