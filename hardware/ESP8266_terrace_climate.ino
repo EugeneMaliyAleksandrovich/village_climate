@@ -2,6 +2,8 @@
 #include <ESP8266WebServer.h>
 
 // Конфигурация Wi-Fi
+const char* ssid = "Имя точки доступа";
+const char* password = "Пароль точки доступа";
 
 // Глобальные переменные
 float lastTemp = 0;

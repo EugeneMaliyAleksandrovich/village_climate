@@ -1,0 +1,27 @@
+Climate collector:
+    1. Создать пользователя и группу "village_climate"
+    2. Создать venv и установить библиотеки "requests", "flet", "flet_charts", "flet-cli", "websockets", "uvloop", "flet-web", "flet_desktop"
+    3. Развернуть каталоги:
+    📁/opt/village_climate/
+    ├── 📁 data/
+    ├── 📁 deploy/ 
+    ├── 📁 logs/ 
+         ├── 📁 client_logs/
+         ├── 📁 collector_logs/
+    ├── 📁 src/
+    4. Подтянуть из гита доработки в этот же каталог
+    5. Сделать owner у всех каталогов нового пользователя и группу "village_climate"
+    6. Создать symlink в каталоге /etc/systemd/system от ./deploy/village_climate_data_collector.service
+    7. Выполнить последовательно команды:
+        sudo systemctl daemon-reload
+        sudo systemctl enable village_climate_data_collector.service
+        sudo systemctl start village_climate_data_collector.service
+        sudo systemctl status village_climate_data_collector.service
+    Должен быть работающий процесс
+    
+    На "подумать": 
+    1. Чтобы установить пакеты - мне приходится менять владельца каталогов с проектом на root. 
+    Далее через sudo подгружать пакеты, а потом менять назад владельца на пользователя, от которого будет исполняться служба.
+    Как сделать все удобнее?
+    2. Как удобнее разворачивать и обновлять приложение. Пока мысль такая: в отдельном каталоге создавать репозитори гита. 
+    Далее раскидывать файлы по каталогам в /opt/village_climate и перезапускать daemon.
